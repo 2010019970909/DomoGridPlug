@@ -24,9 +24,10 @@
 #define frq 49
 
 // Tension efficace du reseau electrique
-#define tension 227
+#define tension 230
 
 // Coefficient propre au capteur d'intensite (rapport entre la tension mesuree et l'intensite supposee)
+
 #define coefi 0.01468428781204111600587371512482
 
 // Broche a laquelle la commande du relais est connectee
@@ -36,8 +37,8 @@ uint8_t broche_relais = 0;
 ESP8266WebServer serveur;
 
 // Informations de la connexion
-char* ssid = "ASUS";
-char* mdp  = "hacb-d8tw-m6zc";
+char* ssid = "DomoGridAP";
+char* mdp  = "accuratePassWord";
 
 // Puissance en Watts
 float p = 0;
@@ -47,6 +48,7 @@ int status = WL_IDLE_STATUS;
 
 void setup() {
   pinMode(broche_relais, OUTPUT);
+  digitalWrite(broche_relais, 0);
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(115200);
@@ -61,7 +63,7 @@ void setup() {
   // Definission du nom de domaine a diffuser sur le reseau
   if (!MDNS.begin("domogrid_v4")) {
     Serial.println("Erreur de configuration du repondeur mDNS!");
-    while(1) {  delay(1000);  }
+    while(1)   delay(1000);
    }
   Serial.println("Repondeur mDNS demarre");
 
@@ -82,8 +84,6 @@ void setup() {
 
   // Lancement du serveur
   serveur.begin();
-
-  digitalWrite(broche_relais, 0);
   delay(100);
 }
 
