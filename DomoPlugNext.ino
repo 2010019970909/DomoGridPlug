@@ -8,9 +8,7 @@
  * Cette prise ne permet pas de mesurer precissement la puissance consommee.
  * Effectivement, on ne mesure pas la tension et on ne peut donc pas avoir le cos(Phi) ou la valeur exacte de la tension 
  * La tension n'est pas mesuree, car il n'y a qu'une seule entree ADC sur l'ESP-12 pour mesurer la valeur d'une tension analogique.
- */
-
-/*
+ *
  * TODO:
  * Ajouter du WPS
  * Ajouter le mesh
