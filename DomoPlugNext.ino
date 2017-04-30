@@ -11,6 +11,7 @@
  */
 
 /*
+ * TODO:
  * Ajouter du WPS
  * Ajouter le mesh
  * Ajouter de l'https
@@ -27,7 +28,6 @@
 #define tension 230
 
 // Coefficient propre au capteur d'intensite (rapport entre la tension mesuree et l'intensite supposee)
-
 #define coefi 0.01468428781204111600587371512482
 
 // Broche a laquelle la commande du relais est connectee
@@ -42,9 +42,6 @@ char* mdp  = "accuratePassWord";
 
 // Puissance en Watts
 float p = 0;
-
-// Satut du module WiFi
-int status = WL_IDLE_STATUS;
 
 void setup() {
   pinMode(broche_relais, OUTPUT);
@@ -91,48 +88,48 @@ void loop() {
   if(WiFi.status() != WL_CONNECTED)    connectMyWifi(ssid, mdp);
   
   else  {
-  serveur.handleClient();
+    serveur.handleClient();
 
-  // Variable qui garde en memoire la valeur de la tension lue sur la broche ADC de l'ESP
-  // La valeur de la variable est comprise entre 0 et 1023 (10 bits) soit de 0 a 3300 mV
-  unsigned int capteur = analogRead(A0);
+    // Variable qui garde en memoire la valeur de la tension lue sur la broche ADC de l'ESP
+    // La valeur de la variable est comprise entre 0 et 1023 (10 bits) soit de 0 a 3300 mV
+    unsigned int capteur = analogRead(A0);
   
-  // Tension en mV
-  Serial.print(map(capteur, 0, 1023, 0 , 3300));
-  Serial.print(",");
+    // Tension en mV
+    Serial.print(map(capteur, 0, 1023, 0 , 3300));
+    Serial.print(",");
   
-  // Tension minimale en mV
-  Serial.print(map(mini(capteur, frq), 0, 1023, 0 , 3300));
-  Serial.print(",");
+    // Tension minimale en mV
+    Serial.print(map(mini(capteur, frq), 0, 1023, 0 , 3300));
+    Serial.print(",");
 
-  // Tension maximale en mV
-  Serial.print(map(maxi(capteur, frq), 0, 1023, 0 , 3300));
-  Serial.print(",");
+    // Tension maximale en mV
+    Serial.print(map(maxi(capteur, frq), 0, 1023, 0 , 3300));
+    Serial.print(",");
 
-  // Tension crete a crete en mV
-  Serial.print(uCaC(mini(capteur, frq),maxi(capteur, frq)));
-  Serial.print(",");
+    // Tension crete a crete en mV
+    Serial.print(uCaC(mini(capteur, frq),maxi(capteur, frq)));
+    Serial.print(",");
 
-  // Tension RMS en mV
-  Serial.print(uRms(mini(capteur, frq), maxi(capteur, frq)));
-  Serial.print(",");
+    // Tension RMS en mV
+    Serial.print(uRms(mini(capteur, frq), maxi(capteur, frq)));
+    Serial.print(",");
 
-  // Intensite RMS en mV
-  Serial.print(iRms(coefi, mini(capteur, frq), maxi(capteur, frq)));
-  Serial.print(",");
+    // Intensite RMS en mV
+    Serial.print(iRms(coefi, mini(capteur, frq), maxi(capteur, frq)));
+    Serial.print(",");
 
-  // Puissance apparante en VA
-  p = VA(coefi, mini(capteur, frq), maxi(capteur, frq));
-  Serial.print(p);
-  Serial.print(",");
+    // Puissance apparante en VA
+    p = VA(coefi, mini(capteur, frq), maxi(capteur, frq));
+    Serial.print(p);
+    Serial.print(",");
 
-  // Energie consommee en J
-  Serial.print(energie(p,0));
-  Serial.println();
+    // Energie consommee en J
+    Serial.print(energie(p,0));
+    Serial.println();
 
-  // Periode d'activite du relais en ms
-  tempsActif(etat(),0);
-}
+    // Periode d'activite du relais en ms
+    tempsActif(etat(),0);
+  }
 }
 
 /// Bascule l'etat du relais
@@ -154,24 +151,15 @@ void offRelais()  {
 }
 
 /// Donne l'etat du relais
-bool etat() { //Donne l'etat du relais
- return digitalRead(broche_relais); 
-}
+bool etat() {return digitalRead(broche_relais);}
 
 /// Determine la valeur minimale de la tension de crete
 // Capteur : Valeur a analyser
 // freq : Valeur de frequence a laquelle on affiche la valeur min.
 unsigned int mini(unsigned int capteur, int freq)  {
-  static bool unefois = true;
-  static unsigned int mini;                           
-  static unsigned long tmps;
+  static unsigned int mini = 1023;                           
+  static unsigned long tmps = millis();
   static unsigned int testmin;
-  
-  if(unefois) {
-    mini = 1023;                              
-    tmps = millis();
-    unefois = false;
-  }
 
   if(capteur < testmin) testmin = capteur;
 
@@ -187,16 +175,9 @@ unsigned int mini(unsigned int capteur, int freq)  {
 // Capteur : Valeur a analyser
 // freq : Valeur de frequence a laquelle on affiche la valeur max.
 unsigned int maxi(unsigned int capteur, int freq)  {
-  static bool unefois = true;
-  static unsigned int maxi;
-  static unsigned long tmps;
+  static unsigned int maxi = 0;
+  static unsigned long tmps = millis();
   static unsigned int testmax;
-  
-  if(unefois) {
-    maxi = 0;                 
-    tmps = millis();
-    unefois = false;
-  }
 
   if(capteur > testmax) testmax = capteur;
 
@@ -236,14 +217,14 @@ float energie(float puissance, bool flushE) {
   unsigned long delta_t = millis()-tPasse;
 
   if(digitalRead(broche_relais)  && puissance > 7.5)   energie += (puissance + puissance_0)/2 * (float) delta_t/1000;
-   
+  
   if(energie < 0) energie = 0;
   
   puissance_0 = puissance;
   tPasse = millis();
   
   if(flushE) energie = 0;
-
+  
   return energie;
 }
 
@@ -254,16 +235,16 @@ unsigned long tempsActif(bool condition, bool flushE) {
 
   if(condition) temps += millis() - temps_0;
   temps_0 = millis();
-  
   if(flushE) temps = 0;
-  
   return temps;
 }
 
+/// Remet le compteur de consommation a zero
 void flushE() {
   tempsActif(etat(), 1);
 }
 
+///Verifie la disponibilite d'un access point et se connect a l'access point precise plus haut
 bool connectMyWifi(char* ssid, char* mdp)  {
     while (WiFi.status() == WL_NO_SSID_AVAIL) {
       Serial.print(":");
