@@ -34,31 +34,70 @@ uint8_t broche_relais = 0;
 // Objet ESP8266WebServer
 ESP8266WebServer serveur;
 
-// Informations de la connexion
-char* ssid = "DomoGridAP";
-char* mdp  = "accuratePassWord";
-
 // Puissance en Watts
 float p = 0;
 
+class DomoPlugConfig{ //Objet DomoPlugConfig
+  private:
+    char* ssid = NULL;
+    char* mdp = NULL;
+    char* domaine = NULL;
+    short conf = 0;
+  public:
+    DomoPlugConfig()  {};
+    ~DomoPlugConfig() {};
+    
+    char* getSsid()  {
+    return ssid;
+    };
+    void setSsid(char* inSsid)  {
+      ssid = inSsid;
+    };
+    char* getMdp()  {
+      return mdp;
+    };
+    void setMdp(char* inMdp)  {
+      mdp = inMdp;
+    };
+    char* getDomaine()  {
+      return domaine;
+    };
+    void setDomaine(char* inDomaine)  {
+      domaine = inDomaine;
+    };
+    void config(char* _ssid, char* _mdp, char* _domaine) {
+      ssid = _ssid;
+      mdp = _mdp;
+      domaine = _domaine;
+    };
+};
+
+DomoPlugConfig prise; // Creation d'un objet DomoPlugConfig
+
 void setup() {
+  prise.config("DomoGridAP", "accuratepw", "domogrid_v4");
   pinMode(broche_relais, OUTPUT);
   digitalWrite(broche_relais, 0);
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(115200);
 
+  //if(conf.isConfig()==0)  
+  
   // La DEL integree clignote tant que la connexion n'est pas etablie
-  if(WiFi.status() != WL_CONNECTED)    connectMyWifi(ssid, mdp);
+  if(WiFi.status() != WL_CONNECTED)    connectMyWifi(prise.getSsid(), prise.getMdp());
   
   Serial.print("\n Adresse IP : ");
   // Retourne d'adresse IP du module
   Serial.println(WiFi.localIP());
 
   // Definission du nom de domaine a diffuser sur le reseau
-  if (!MDNS.begin("domogrid_v4")) {
+  if (!MDNS.begin(prise.getDomaine())) {
     Serial.println("Erreur de configuration du repondeur mDNS!");
-    while(1)   delay(1000);
+    while(1)  {
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    delay(125);
+    }
    }
   Serial.println("Repondeur mDNS demarre");
 
@@ -83,7 +122,7 @@ void setup() {
 }
 
 void loop() {
-  if(WiFi.status() != WL_CONNECTED)    connectMyWifi(ssid, mdp);
+  if(WiFi.status() != WL_CONNECTED)    connectMyWifi(prise.getSsid(), prise.getMdp());
   
   else  {
     serveur.handleClient();
