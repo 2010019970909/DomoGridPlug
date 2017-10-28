@@ -22,6 +22,6 @@ Le programme permet :
    - l'adresse MAC de l'accès point
    - l'adresse IP
    - un graphique de la puissance instantanée et moyenne en fonction du temps (sur 10 minutes)
-- de mettre à jour le code de la puce :
- - soit en utilisant la fonctionnalité OTA d'Arduino
- - soit en utilisant la page "mise à jour" du serveur
+ - de mettre à jour le code de la puce :
+   - soit en utilisant la fonctionnalité OTA d'Arduino
+   - soit en utilisant la page "mise à jour" du serveur
