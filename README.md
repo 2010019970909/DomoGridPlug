@@ -4,18 +4,20 @@ This program allows you to remotly control a relay.
 Ce programme permet de contrôler un relais à distance.
 
 # TODO
+## List
 - [ ] Add the WPS function
-~~- [ ] Use https server~~ (not possible on this chip)
+- [ ] ~~Use https server~~ (not possible on this chip)
 - [ ] Add a websockets serveur
 - [X] Add client authentification (~~https +~~ client account)
 
+## Liste
 - [ ] Ajouter la fonction WPS
-~~- [ ] Serveur https~~ (Impossible à l'heure actuel sur l'ESP8266)
+- [ ] ~~Serveur https~~ (Impossible à l'heure actuel sur l'ESP8266)
 - [ ] Ajouter un serveur websockets
 - [X] Authentification du client (~~https +~~ compte client)
 
 # State of the program now/État actuel du programme
-This program allows to:
+## This program allows to:
 - connect the plug to an access point whose connection information has been pre-registered in the ".ino" file
 - turn on and off a relay remotly
 - get:
@@ -33,7 +35,7 @@ This program allows to:
   - by using the "update" page of the server
 
 
-Le programme permet :
+## Ce programme permet :
 - de se connecter à un point d'accès dont les informations de connexion ont été préenregistré dans le fichier ".ino"
 - d'allumer et d'éteindre un relais à distance
 - d'obtenir :
